@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر المكياج الشامل - كل شيء بـ $1</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #fce4ec; color: #333; padding-bottom: 50px; }
+        header { background-color: #d81b60; color: white; text-align: center; padding: 25px 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        header h1 { margin-bottom: 5px; font-size: 1.8rem; }
+        .banner { background-color: #f8bbd0; color: #880e4f; text-align: center; padding: 10px; font-weight: bold; font-size: 1.1rem; }
+        
+        .container { max-width: 1300px; margin: 20px auto; padding: 0 15px; display: flex; flex-wrap: wrap; gap: 20px; }
+        .products-section { flex: 3; min-width: 300px; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); }
+        .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; background-color: #f8f8f8; }
+        .card h3 { font-size: 0.95rem; margin: 10px 0; color: #880e4f; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .price { font-size: 1.2rem; color: #d81b60; font-weight: bold; margin-bottom: 8px; }
+        .btn { background-color: #d81b60; color: white; border: none; padding: 8px 10px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.2s; }
+        .btn:hover { background-color: #ad1457; }
+
+        .cart { flex: 1; min-width: 280px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: fit-content; position: sticky; top: 110px; max-height: 80vh; display: flex; flex-direction: column; }
+        .cart h2 { color: #880e4f; border-bottom: 2px solid #f8bbd0; padding-bottom: 10px; margin-bottom: 15px; font-size: 1.3rem; }
+        .cart-list { overflow-y: auto; flex-grow: 1; max-height: 350px; padding-left: 5px; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; font-size: 0.9rem; }
+        .total { font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #d81b60; text-align: center; border-top: 2px solid #f8bbd0; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>عالم المكياج والتجميل (1000+ منتج)</h1>
+    <p>أكبر تشكيلة مستحضرات تجميل بسعر موحد!</p>
+</header>
+
+<div class="banner">
+    ✨ جميع المنتجات متوفرة بسعر 1.00$ فقط للقطعة ✨
+</div>
+
+<div class="container">
+    <div class="products-section">
+        <div class="products-grid" id="products-container">
+            <!-- يتم توليد الـ 1000 منتج هنا تلقائياً بواسطة الكود -->
+        </div>
+    </div>
+
+    <div class="cart">
+        <h2>سلة التسوق 🛒</h2>
+        <div class="cart-list" id="cart-items">
+            <p style="color: #777; text-align: center;">السلة فارغة حالياً</p>
+        </div>
+        <div class="total" id="total-price">المجموع: $0.00</div>
+    </div>
+</div>
+
+<script>
+    // قائمة الفئات والصور المتاحة لعمل تنوع في المنتجات
+    const categories = [
+        { name: "أحمر شفاه", img: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=300" },
+        { name: "ماسكارا تكثيف", img: "https://images.unsplash.com/photo-1560700321-158a2d1d32a0?w=300" },
+        { name: "طلاء أظافر", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300" },
+        { name: "بودرة وجه", img: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300" },
+        { name: "ظلال عيون", img: "https://images.unsplash.com/photo-1583241799080-311e63253512?w=300" },
+        { name: "فرشاة مكياج", img: "https://images.unsplash.com/photo-1522337094846-8a8383853713?w=300" },
+        { name: "محدد حواجب", img: "https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?w=300" },
+        { name: "ملمع شفاه", img: "https://images.unsplash.com/photo-1625093742435-6fa192b6fb10?w=300" }
+    ];
+
+    // توليد مصفوفة تحتوي على 1000 منتج
+    const totalProducts = 1000;
+    const products = [];
+
+    for (let i = 1; i <= totalProducts; i++) {
+        const cat = categories[i % categories.length];
+        products.push({
+            id: i,
+            name: `${cat.name} - درجة رقم ${i}`,
+            price: 1.00,
+            image: cat.img
+        });
+    }
+
+    // عرض المنتجات داخل الصفحة
+    const container = document.getElementById('products-container');
+    
+    // بناء الأكواد دفعة واحدة لضمان سرعة التحميل
+    let productsHTML = '';
+    products.forEach(product => {
+        productsHTML += `
+            <div class="card">
+                <img src="${product.image}" alt="${product.name}" loading="lazy">
+                <h3>${product.name}</h3>
+                <div class="price">$${product.price.toFixed(2)}</div>
+                <button class="btn" onclick="addToCart('${product.name}')">أضف للسلة</button>
+            </div>
+        `;
+    });
+    container.innerHTML = productsHTML;
+
+    // إدارة سلة التسوق
+    let cart = [];
+
+    function addToCart(productName) {
+        cart.push(productName);
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartContainer = document.getElementById('cart-items');
+        const totalContainer = document.getElementById('total-price');
+
+        if (cart.length === 0) {
+            cartContainer.innerHTML = '<p style="color: #777; text-align: center;">السلة فارغة حالياً</p>';
+            totalContainer.innerText = 'المجموع: $0.00';
+            return;
+        }
+
+        let cartHTML = '';
+        cart.forEach((item) => {
+            cartHTML += `
+                <div class="cart-item">
+                    <span>${item}</span>
+                    <span>$1.00</span>
+                </div>
+            `;
+        });
+
+        cartContainer.innerHTML = cartHTML;
+        totalContainer.innerText = `المجموع: $${cart.length.toFixed(2)}`;
+    }
+</script>
+
+</body>
+</html>
